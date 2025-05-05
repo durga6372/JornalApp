@@ -1,5 +1,6 @@
 package durgaproject.jornalapp1.service;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class mailSenderText {
   @Autowired
   private  EmailService emailService;
+  @Disabled
     @Test
     public  void  sendMAil(){
         emailService.sendMail("durgaputhal@gmail.com","hello","How are you");
@@ -15,3 +17,4 @@ public class mailSenderText {
     }
 
 }
+

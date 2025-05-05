@@ -1,48 +1,55 @@
 package durgaproject.jornalapp1.controler;
-
 import durgaproject.jornalapp1.entity.User;
+import durgaproject.jornalapp1.repo.UserRepo;
 import durgaproject.jornalapp1.service.UserService;
-import lombok.Setter;
+import durgaproject.jornalapp1.service.WheatherService;
+import durgaproject.jornalapp1.wheatherentity.wheatherResponse;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/user")
 public class UserControler {
     @Autowired
     private UserService userService ;
-    @GetMapping
-    public ResponseEntity<?> getAllUser(){
-        try {
-            List <User> user= userService.getAll();
-            return new ResponseEntity<>(user,HttpStatus.OK);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        }
-    @PostMapping
-    public void createUser(@RequestBody User user){
-        userService.saveUser(user );
-
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private WheatherService wheatherService;
+    @PutMapping()
+    public ResponseEntity<?> updateUser(@RequestBody User user){
+           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+           String userName = authentication.getName();
+           User username = userService.findByUserName(userName);
+           username.setUserName(user.getUserName());
+           username.setPassword(user.getPassword());
+           userService.saveNewUser(user);
+           return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
-    public boolean deleteById(@PathVariable ObjectId id){
-         userService.dleteById(id);
-         return true;
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@RequestBody User user){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName=authentication.getName();
+        userRepo.deleteByUserName(userName);
+        return new ResponseEntity<>(true,HttpStatus.NO_CONTENT);
     }
-    @PutMapping("{userName}")
-    public ResponseEntity<?> updateUser(@PathVariable String userName ,@RequestBody User user){
-          User username=userService.findByUserName(userName);
-          if (username!=null){
-              username.setUserName(user.getUserName());
-              username.setPassword(user.getPassword());
-              userService.saveUser(username);
-          }
-          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/id/{myId}")
+    public ResponseEntity<?> deleteUserById(@PathVariable ObjectId myId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName=authentication.getName();
+        userRepo.deleteById(myId);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/greetings/city/{city}")
+    public ResponseEntity<?> greetings(@PathVariable String city) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        wheatherResponse weatherResponse =  wheatherService.getWheather(city);
+        return new ResponseEntity<>("Hi " + userName + " wheather feels like " + weatherResponse, HttpStatus.OK);
     }
 }
+

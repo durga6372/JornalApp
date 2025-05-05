@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailService {
 @Autowired
-    private JavaMailSender javaMailSender;
+private JavaMailSender javaMailSender;
 public void sendMail(String to,String subject,String body){
     try {
         SimpleMailMessage mail=new SimpleMailMessage();
@@ -18,11 +18,9 @@ public void sendMail(String to,String subject,String body){
         mail.setSubject(subject);
         mail.setText(body);
         javaMailSender.send(mail);
-
     }
     catch (Exception e) {
         log.error("ecception",e);
     }
-
 }
 }

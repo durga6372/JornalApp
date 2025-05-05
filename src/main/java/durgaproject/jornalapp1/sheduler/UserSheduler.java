@@ -30,10 +30,7 @@ public class UserSheduler {
             List<String> filtered = jornalEntry.stream().filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS))).map(x-> x.getContent()).collect(Collectors.toList());
             String entry = String.join("", filtered);
             String sentiment = senmentAnalysisService.getSentiment(entry);
-//          emailService.sendMail(users.getEmail(),"sentiment for last Sevendays",sentiment);
+          emailService.sendMail(users.getEmail(),"sentiment for last Sevendays",sentiment);
         }
-
-
     }
-
 }
