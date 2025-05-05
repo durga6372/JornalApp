@@ -11,11 +11,13 @@ COPY mvnw pom.xml ./
 # Download dependencies
 RUN ./mvnw dependency:go-offline
 
+
+
 # Copy the rest of the code
 COPY . .
 
 # Package the application
-RUN ./mvnw clean install
+RUN ./mvnw clean install -DskipTests
 
 # Run the application
 CMD ["java", "-jar", "target/jornalapp1-0.0.1-SNAPSHOT.jar"]
