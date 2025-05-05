@@ -1,7 +1,6 @@
 package durgaproject.jornalapp1.entity;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,15 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 @Document(collection = "user")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     private ObjectId id;
-    @Indexed(unique = true)
+    @Indexed(unique = true )
     @NonNull
     private String userName;
     @NonNull
     private String password;
     @DBRef
     private List<JornalEntry> jornalEntry= new ArrayList<>();
+    private  String email;
+    private boolean sentimentAnalysis;
+    private List<String> rolls=new ArrayList<>();
 
 }
