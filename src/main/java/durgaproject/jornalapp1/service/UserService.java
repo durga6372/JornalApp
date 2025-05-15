@@ -32,10 +32,6 @@ public boolean saveNewUser(User user) {
    }
    catch ( Exception e){
        log.info("an error occurred for {}",user.getUserName(),e);
-       log.warn("an error occurred",e);
-       log.error("an error occurred",e);
-       log.debug("an error occurred",e);
-       log.trace("an error occurred",e);
        return false;
    }
 }

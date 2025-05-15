@@ -2,7 +2,7 @@ package durgaproject.jornalapp1.wheatherentity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 @Data
-public class wheatherResponse {
+public class   wheatherResponse {
     private Main main;
     @Data
     public static class Main {

@@ -1,5 +1,4 @@
 package durgaproject.jornalapp1.sheduler;
-
 import durgaproject.jornalapp1.entity.JornalEntry;
 import durgaproject.jornalapp1.entity.User;
 import durgaproject.jornalapp1.repo.userReposiratoryImpl;
@@ -8,7 +7,6 @@ import durgaproject.jornalapp1.service.senmentAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
