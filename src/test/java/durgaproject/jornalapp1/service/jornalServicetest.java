@@ -14,5 +14,6 @@ public class jornalServicetest {
     @Test
     public void text(){
        assertNotNull(jornalEntryService.getAll());
+        System.out.println(jornalEntryService.getAll());
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 public class Jornalapp1Application {
 
 	public static void main(String[] args) {
+		DotenvLoader.loadEnv();
 		SpringApplication.run(Jornalapp1Application.class, args);
 	}
 	@Bean
