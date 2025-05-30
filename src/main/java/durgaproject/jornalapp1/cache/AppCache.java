@@ -20,12 +20,21 @@ public class AppCache {
     private ConfigJournalAppRepo configJournalAppRepo;
     public Map<String,String> appCache;
     @PostConstruct
-    public void init(){
-        appCache=new HashMap<>();
-        List<ConfigJournalAppEntity> all= configJournalAppRepo.findAll();
-        for(ConfigJournalAppEntity configJournalAppEntity : all){
-            appCache.put(configJournalAppEntity.getKey(),configJournalAppEntity.getValue());
+    public void init() {
+        refresh();
+    }
+
+    public void refresh() {
+        appCache = new HashMap<>();
+        List<ConfigJournalAppEntity> all = configJournalAppRepo.findAll();
+        for (ConfigJournalAppEntity configJournalAppEntity : all) {
+            appCache.put(configJournalAppEntity.getKey(), configJournalAppEntity.getValue());
         }
     }
 
-}
+    public String get(String key) {
+        return appCache.get(key);
+    }
+    }
+
+
