@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  springboot-app:
+    build: .
+    container_name: springboot-container
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./.env:/app/.env  # Mount your local .env into container
+    environment:
+      - SERVER_PORT=8082
+      - SECRET_KEY=my-very-secure-and-long-secret-key-1234567890
+      - SPRING_PROFILES_ACTIVE=Dev
+      # Add more env vars here if needed, for example:
+      # - OTHER_VAR=value

@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceimpl implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
-    @Override
+   @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user=userRepo.findByUserName(username);
         if (user!=null){
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUserName())
                     .password(user.getPassword())
-                    .roles(user.getRolls().toArray(new String[0]))
+                    .roles(user.getRolls().stream().map(String::toUpperCase).toArray(String[]::new))
                     .build();
         }
         throw new UsernameNotFoundException("user name not found"+username);

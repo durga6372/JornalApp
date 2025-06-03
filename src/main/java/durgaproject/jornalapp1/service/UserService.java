@@ -26,7 +26,7 @@ public  void saveUser (User user){  userRepo.save(user);
 public boolean saveNewUser(User user) {
    try {
        user.setPassword(passwordEncoder.encode(user.getPassword()));
-       user.setRolls(Arrays.asList("user"));
+       user.setRolls(Arrays.asList("USER"));
        userRepo.save(user);
        return true;
    }
