@@ -42,7 +42,7 @@ public class JornalEntryControler {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("id/{myId}")
+    @GetMapping("/id/{myId}")
     public ResponseEntity<?> getJornalEntryById(@PathVariable ObjectId myId ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName=authentication.getName();

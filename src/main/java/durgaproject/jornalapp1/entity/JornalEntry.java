@@ -1,6 +1,7 @@
 package durgaproject.jornalapp1.entity;
 
 
+import durgaproject.jornalapp1.Enum.Sentiment;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +23,6 @@ public class JornalEntry {
     private String titel;
     private String content;
     private LocalDateTime date;
+    private Sentiment sentiment;
 
 }
