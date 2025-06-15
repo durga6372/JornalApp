@@ -46,4 +46,8 @@ public void dleteByid(ObjectId id){
 public  User findByUserName(String userName){
     return userRepo.findByUserName( userName);
 }
+public boolean anyUserExists() {
+        return userRepo.count() > 0;
+    }
+
 }

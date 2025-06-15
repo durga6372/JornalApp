@@ -1,6 +1,8 @@
 package durgaproject.jornalapp1.controler;
+import durgaproject.jornalapp1.dto.ChatRequest;
 import durgaproject.jornalapp1.entity.User;
 import durgaproject.jornalapp1.repo.UserRepo;
+import durgaproject.jornalapp1.service.OpenAIChatService;
 import durgaproject.jornalapp1.service.UserService;
 import durgaproject.jornalapp1.service.WheatherService;
 import durgaproject.jornalapp1.wheatherentity.wheatherResponse;
@@ -20,6 +22,8 @@ public class UserControler {
     private UserRepo userRepo;
     @Autowired
     private WheatherService wheatherService;
+    @Autowired
+    private OpenAIChatService chatService;
     @PutMapping()
     public ResponseEntity<?> updateUser(@RequestBody User user){
            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +54,18 @@ public class UserControler {
         String userName = authentication.getName();
         wheatherResponse weatherResponse =  wheatherService.getWheather(city);
         return new ResponseEntity<>("Hi " + userName + " wheather feels like " + weatherResponse, HttpStatus.OK);
+    }
+    @PostMapping("/chat")
+    public ResponseEntity<String> chat(@RequestBody ChatRequest request) {
+        try{
+            String reply = chatService.getChatResponse(request.getMessage());
+            return  ResponseEntity.ok(reply);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Something went wrong.");
+        }
+
     }
 }
 
