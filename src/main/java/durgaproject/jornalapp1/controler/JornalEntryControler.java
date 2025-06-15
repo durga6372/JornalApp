@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
+@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 @RequestMapping("/jornal")
 public class JornalEntryControler {
@@ -29,7 +30,7 @@ public class JornalEntryControler {
         if (all != null && !all.isEmpty()) {
             return new ResponseEntity<>(all,HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("no content",HttpStatus.NO_CONTENT);
     }
     @PostMapping
     public ResponseEntity<?> creatEntry(@RequestBody JornalEntry myEntry) {
@@ -57,33 +58,49 @@ public class JornalEntryControler {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("id/{myId}")
-    public ResponseEntity<?> deletejornalentrybyId(@PathVariable ObjectId myId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
-        boolean removed = jornalEntryService.dleteById(myId, userName);
-        if (removed){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    @PutMapping("/id/{id}")
-    public ResponseEntity<?> updateById(@PathVariable ObjectId id, @RequestBody JornalEntry newEntry ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
-        User user = userService.findByUserName(userName);
-        List<JornalEntry> collect = user.getJornalEntry().stream().filter(x -> x.getId().equals(id)).collect(Collectors.toList());
-        if (collect.isEmpty()){
-            Optional<JornalEntry> jornalEntry = jornalEntryService.findById(id);
-            if (jornalEntry.isPresent()) {
-                JornalEntry old = jornalEntryService.findById(id).orElse(null);
-                if (old != null) {
-                    old.setTitel(newEntry.getTitel() != null && !newEntry.getTitel().equals("") ? newEntry.getTitel() : old.getTitel());
-                    old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
-                    jornalEntryService.saveEntry(old);
-                    return new ResponseEntity<>(old,HttpStatus.ACCEPTED);
-                }
+    public ResponseEntity<?> deletejornalentrybyId(@PathVariable String myId) {
+        try {
+            ObjectId objectId = new ObjectId(myId); // Manual conversion
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+
+            boolean removed = jornalEntryService.dleteById(objectId, userName);
+            if (removed) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
+        } catch (IllegalArgumentException e) {
+            // Invalid ObjectId format
+            return new ResponseEntity<>("Invalid ID format", HttpStatus.BAD_REQUEST);
         }
+
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @PutMapping("/id/{id}")
+    public ResponseEntity<?> updateById(@PathVariable ObjectId id, @RequestBody JornalEntry newEntry) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        User user = userService.findByUserName(userName);
+
+        System.out.println("Received ID: " + id);
+        System.out.println("Authenticated user: " + userName);
+        System.out.println("User entries: " + user.getJornalEntry());
+
+        List<JornalEntry> collect = user.getJornalEntry().stream()
+                .filter(x -> x.getId().toString().equals(id.toString()))
+                .collect(Collectors.toList());
+
+        if (collect.isEmpty()) {
+            return new ResponseEntity<>("Entry not found for this user", HttpStatus.NOT_FOUND);
+        }
+
+        JornalEntry old = collect.get(0);
+        old.setTitel(newEntry.getTitel() != null && !newEntry.getTitel().isBlank() ? newEntry.getTitel() : old.getTitel());
+        old.setContent(newEntry.getContent() != null && !newEntry.getContent().isBlank() ? newEntry.getContent() : old.getContent());
+        jornalEntryService.saveEntry(old);
+
+        return new ResponseEntity<>(old, HttpStatus.ACCEPTED);
+    }
+
 }
