@@ -46,8 +46,8 @@ public class JornalEntryService {
         boolean remove=false;
         try {
             User user = userService.findByUserName(userName);
-            boolean removed = user.getJornalEntry().removeIf(x -> x.getId().equals(id));
-            if (removed) {
+            boolean find = user.getJornalEntry().removeIf(x -> x.getId().equals(id));
+            if (find) {
                 userService.saveUser(user);
                 jornalEntryRepo.deleteById(id);
             }
