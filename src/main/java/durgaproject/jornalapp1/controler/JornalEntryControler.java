@@ -1,5 +1,6 @@
 package durgaproject.jornalapp1.controler;
-import   durgaproject.jornalapp1.entity.JornalEntry;
+
+import durgaproject.jornalapp1.entity.JornalEntry;
 import durgaproject.jornalapp1.entity.User;
 import durgaproject.jornalapp1.service.JornalEntryService;
 import durgaproject.jornalapp1.service.UserService;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,35 +21,38 @@ public class JornalEntryControler {
     private JornalEntryService jornalEntryService;
     @Autowired
     private UserService userService;
+
     @GetMapping
     public ResponseEntity<?> getAllJornalEntriesOfUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
+        String userName = authentication.getName();
         User user = userService.findByUserName(userName);
         List<JornalEntry> all = user.getJornalEntry();
         if (all != null && !all.isEmpty()) {
-            return new ResponseEntity<>(all,HttpStatus.OK);
+            return new ResponseEntity<>(all, HttpStatus.OK);
         }
-        return new ResponseEntity<>("no content",HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("no content", HttpStatus.NO_CONTENT);
     }
+
     @PostMapping
     public ResponseEntity<?> creatEntry(@RequestBody JornalEntry myEntry) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userName=authentication.getName();
+            String userName = authentication.getName();
             jornalEntryService.saveEntry(myEntry, userName);
             return new ResponseEntity<>(myEntry, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/id/{myId}")
-    public ResponseEntity<?> getJornalEntryById(@PathVariable ObjectId myId ) {
+    public ResponseEntity<?> getJornalEntryById(@PathVariable ObjectId myId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName=authentication.getName();
+        String userName = authentication.getName();
         User user = userService.findByUserName(userName);
-        List<JornalEntry> collect = user.getJornalEntry().stream().filter(x -> x.getId().equals(myId)).collect(Collectors.toList());
-        if (collect.isEmpty()){
+        List<JornalEntry> collect = user.getJornalEntry().stream().filter(x -> x.getId().equals(myId)).toList();
+        if (collect.isEmpty()) {
             Optional<JornalEntry> jornalEntry = jornalEntryService.findById(myId);
             if (jornalEntry.isPresent()) {
                 return new ResponseEntity<>(jornalEntry, HttpStatus.OK);
@@ -57,6 +60,7 @@ public class JornalEntryControler {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @DeleteMapping("id/{myId}")
     public ResponseEntity<?> deletejornalentrybyId(@PathVariable String myId) {
         try {
