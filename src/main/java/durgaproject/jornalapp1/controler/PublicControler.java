@@ -1,14 +1,15 @@
 package durgaproject.jornalapp1.controler;
 
+import durgaproject.jornalapp1.dto.UserDTO;
 import durgaproject.jornalapp1.entity.User;
 import durgaproject.jornalapp1.repo.UserRepo;
 import durgaproject.jornalapp1.service.UserService;
 import durgaproject.jornalapp1.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 
@@ -28,27 +29,26 @@ public class PublicControler {
     @Autowired
     private JwtUtil jwtUtil;
     @PostMapping("/register")
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
-        if (user.getUserName() == null || user.getPassword() == null) {
+    public ResponseEntity<Object> createUser(@RequestBody UserDTO userDTO) {
+        User user=new User();
+        if (userDTO.getUserName() == null || userDTO.getPassword() == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Username and password are required"));
         }
         // Check if user already exists (based on userName)
-        User existingUser = userService.findByUserName(user.getUserName());
+        User existingUser = userService.findByUserName(userDTO.getUserName());
         if (existingUser != null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Username already exists"));
         }
-
-        user.setId(null); // Let Mongo generate it
-        user.setJornalEntry(new ArrayList<>());
-        if (user.getRolls() == null) user.setRolls(new ArrayList<>());
-
+        user.setUserName(userDTO.getUserName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setSentimentAnalysis(userDTO.isSentimentAnalysis());
         userService.saveNewUser(user);
         return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody User user) {
-        System.out.println(user.getUserName());
-        System.out.println(user.getPassword());
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword())
@@ -57,7 +57,7 @@ public class PublicControler {
             if (authentication.isAuthenticated()) {
                 var userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
                 var roles = userDetails.getAuthorities().stream()
-                        .map(auth -> auth.getAuthority())
+                        .map(GrantedAuthority::getAuthority)
                         .toList();
 
                 String token = jwtUtil.generateToken(user.getUserName(), roles);

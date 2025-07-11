@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -20,9 +21,8 @@ import java.util.stream.Collectors;
 public class JwtUtil {
     private final Key SECRET_KEY;
 
-    public JwtUtil() {
-        Dotenv dotenv = Dotenv.configure().load();
-        this.SECRET_KEY = Keys.hmacShaKeyFor(dotenv.get("SECRET_KEY").getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(@Value("${SECRET_KEY}") String secret) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     // Extract username (subject)

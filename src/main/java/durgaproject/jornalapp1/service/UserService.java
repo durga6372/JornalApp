@@ -1,5 +1,6 @@
 package durgaproject.jornalapp1.service;
 
+import durgaproject.jornalapp1.dto.UserDTO;
 import durgaproject.jornalapp1.entity.User;
 import durgaproject.jornalapp1.repo.UserRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -23,18 +24,22 @@ public class UserService {
 public  void saveUser (User user){  userRepo.save(user);
 }
 
-public boolean saveNewUser(User user) {
-   try {
-       user.setPassword(passwordEncoder.encode(user.getPassword()));
-       user.setRolls(Arrays.asList("USER"));
-       userRepo.save(user);
-       return true;
-   }
-   catch ( Exception e){
-       log.info("an error occurred for {}",user.getUserName(),e);
-       return false;
-   }
-}
+    public boolean saveNewUser(User user) {
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            // Only set default role if no roles are assigned
+            if (user.getRolls() == null || user.getRolls().isEmpty()) {
+                user.setRolls(Arrays.asList("USER"));
+            }
+            userRepo.save(user);
+            return true;
+        }
+        catch ( Exception e){
+            log.error("an error occurred for {}", user.getUserName(), e);
+            return false;
+        }
+    }
+
 public List<User > getAll(){return userRepo.findAll();
 }
 public Optional<User> findByUserId(ObjectId id){

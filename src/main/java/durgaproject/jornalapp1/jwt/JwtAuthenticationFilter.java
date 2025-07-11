@@ -27,6 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.equals("/login")
+                || path.startsWith("/public/")
+                || path.startsWith("/api/auth/exists");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
@@ -49,16 +57,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.validateToken(jwtToken, username)) {
-                // 🔥 Extract roles from token and map to authorities
                 List<String> roles = jwtUtil.extractRoles(jwtToken);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-                // 👤 Create a dummy UserDetails object (Spring needs a principal)
                 User userDetails = new User(username, "", authorities);
 
-                // ✅ Set authentication with authorities
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, authorities
                 );
