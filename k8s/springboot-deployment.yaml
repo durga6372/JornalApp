@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot
+  template:
+    metadata:
+      labels:
+        app: springboot
+    spec:
+      containers:
+        - name: springboot-container
+          image: durga5151/myrepository:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: MONGO_URI
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: MAIL_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: REDIS_PASSWORD
+            - name: KAFKA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: KAFKA_USERNAME
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: KAFKA_PASSWORD
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SECRET_KEY
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: OPENAI_API_KEY
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_DB
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SERVER_PORT
+            - name: WEATHER_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: WEATHER_API_KEY
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_PORT
+            - name: KAFKA_BOOTSTRAP
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: KAFKA_BOOTSTRAP
+            - name: KAFKA_GROUP_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: KAFKA_GROUP_ID
+            - name: CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CLIENT_ID
+            - name: OPENAI_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: OPENAI_API_URL
